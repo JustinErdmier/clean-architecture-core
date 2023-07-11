@@ -1,122 +1,124 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CleanArchitecture.Domain.Customers;
+﻿using CleanArchitecture.Domain.Customers;
 using CleanArchitecture.Domain.Employees;
 using CleanArchitecture.Domain.Products;
+
 using NUnit.Framework;
 
-namespace CleanArchitecture.Domain.Sales
+namespace CleanArchitecture.Domain.Sales;
+
+[ TestFixture ]
+public sealed class SaleTests
 {
-    [TestFixture]
-    public class SaleTests
+    [ SetUp ]
+    public void SetUp()
     {
-        private Sale _sale;
-        private Customer _customer;
-        private Employee _employee;
-        private Product _product;
+        _customer = new Customer();
 
-        private const int Id = 1;
-        private static readonly DateTime Date = new(2001, 2, 3);
-        private const decimal UnitPrice = 1.00m;
-        private const int Quantity = 1;
+        _employee = new Employee();
 
+        _product = new Product();
 
-        [SetUp]
-        public void SetUp()
-        {
-            _customer = new Customer();
+        _sale = new Sale();
+    }
 
-            _employee = new Employee();
+    private Sale _sale;
 
-            _product = new Product();
+    private Customer _customer;
 
-            _sale = new Sale();
-        }
+    private Employee _employee;
 
-        [Test]
-        public void TestSetAndGetId()
-        {
-            _sale.Id = Id;
+    private Product _product;
 
-            Assert.That(_sale.Id,
-                Is.EqualTo(Id));
-        }
+    private const int Id = 1;
 
-        [Test]
-        public void TestSetAndGetDate()
-        {
-            _sale.Date = Date;
+    private static readonly DateTime Date = new (2001, 2, 3);
 
-            Assert.That(_sale.Date,
-                Is.EqualTo(Date));
-        }
+    private const decimal UnitPrice = 1.00m;
 
-        [Test]
-        public void TestSetAndGetCustomer()
-        {
-            _sale.Customer = _customer;
+    private const int Quantity = 1;
 
-            Assert.That(_sale.Customer,
-                Is.EqualTo(_customer));
-        }
+    [ Test ]
+    public void TestSetAndGetId()
+    {
+        _sale.Id = Id;
 
-        [Test]
-        public void TestSetAndGetEmployee()
-        {
-            _sale.Employee = _employee;
+        Assert.That(_sale.Id,
+                    Is.EqualTo(Id));
+    }
 
-            Assert.That(_sale.Employee,
-                Is.EqualTo(_employee));
-        }
+    [ Test ]
+    public void TestSetAndGetDate()
+    {
+        _sale.Date = Date;
 
-        [Test]
-        public void TestSetAndGetProduct()
-        {
-            _sale.Product = _product;
+        Assert.That(_sale.Date,
+                    Is.EqualTo(Date));
+    }
 
-            Assert.That(_sale.Product,
-                Is.EqualTo(_product));
-        }
+    [ Test ]
+    public void TestSetAndGetCustomer()
+    {
+        _sale.Customer = _customer;
 
-        [Test]
-        public void TestSetAndGetUnitPrice()
-        {
-            _sale.UnitPrice = UnitPrice;
+        Assert.That(_sale.Customer,
+                    Is.EqualTo(_customer));
+    }
 
-            Assert.That(_sale.UnitPrice, 
-                Is.EqualTo(UnitPrice));
-        }
+    [ Test ]
+    public void TestSetAndGetEmployee()
+    {
+        _sale.Employee = _employee;
 
-        [Test]
-        public void TestSetAndGetQuantity()
-        {
-            _sale.Quantity = Quantity;
+        Assert.That(_sale.Employee,
+                    Is.EqualTo(_employee));
+    }
 
-            Assert.That(_sale.Quantity,
-                Is.EqualTo(Quantity));
-        }
+    [ Test ]
+    public void TestSetAndGetProduct()
+    {
+        _sale.Product = _product;
 
-        [Test]
-        public void TestSetUnitPriceShouldRecomputeTotalPrice()
-        {
-            _sale.Quantity = Quantity;
+        Assert.That(_sale.Product,
+                    Is.EqualTo(_product));
+    }
 
-            _sale.UnitPrice = 1.23m;
+    [ Test ]
+    public void TestSetAndGetUnitPrice()
+    {
+        _sale.UnitPrice = UnitPrice;
 
-            Assert.That(_sale.TotalPrice, 
-                Is.EqualTo(1.23m));
-        }
+        Assert.That(_sale.UnitPrice,
+                    Is.EqualTo(UnitPrice));
+    }
 
-        [Test]
-        public void TestSetQuantityShouldRecomputeTotalPrice()
-        {
-            _sale.UnitPrice = UnitPrice;
+    [ Test ]
+    public void TestSetAndGetQuantity()
+    {
+        _sale.Quantity = Quantity;
 
-            _sale.Quantity = 2;
+        Assert.That(_sale.Quantity,
+                    Is.EqualTo(Quantity));
+    }
 
-            Assert.That(_sale.TotalPrice, 
-                Is.EqualTo(2.00m));
-        }
+    [ Test ]
+    public void TestSetUnitPriceShouldRecomputeTotalPrice()
+    {
+        _sale.Quantity = Quantity;
+
+        _sale.UnitPrice = 1.23m;
+
+        Assert.That(_sale.TotalPrice,
+                    Is.EqualTo(1.23m));
+    }
+
+    [ Test ]
+    public void TestSetQuantityShouldRecomputeTotalPrice()
+    {
+        _sale.UnitPrice = UnitPrice;
+
+        _sale.Quantity = 2;
+
+        Assert.That(_sale.TotalPrice,
+                    Is.EqualTo(2.00m));
     }
 }

@@ -1,51 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using CleanArchitecture.Application.Interfaces;
+using CleanArchitecture.Domain.Employees;
+
 using Moq.AutoMock;
 using Moq.EntityFrameworkCore;
-using CleanArchitecture.Application.Interfaces;
-using CleanArchitecture.Domain.Employees;
+
 using NUnit.Framework;
 
-namespace CleanArchitecture.Application.Employees.Queries.GetEmployeesList
+namespace CleanArchitecture.Application.Employees.Queries.GetEmployeesList;
+
+[ TestFixture ]
+public sealed class GetEmployeesListQueryTests
 {
-    [TestFixture]
-    public class GetEmployeesListQueryTests
+    [ SetUp ]
+    public void SetUp()
     {
-        private GetEmployeesListQuery _query;
-        private AutoMocker _mocker;
-        private Employee _employee;
+        _mocker = new AutoMocker();
 
-        private const int Id = 1;
-        private const string Name = "Employee 1";
-
-        [SetUp]
-        public void SetUp()
+        _employee = new Employee
         {
-            _mocker = new AutoMocker();
+            Id   = Id,
+            Name = Name
+        };
 
-            _employee = new Employee()
-            {
-                Id = Id,
-                Name = Name
-            };
+        _mocker.GetMock<IDatabaseService>()
+               .Setup(p => p.Employees)
+               .ReturnsDbSet(new List<Employee> { _employee });
 
-            _mocker.GetMock<IDatabaseService>()
-                .Setup(p => p.Employees)
-                .ReturnsDbSet(new List<Employee> { _employee });
+        _query = _mocker.CreateInstance<GetEmployeesListQuery>();
+    }
 
-            _query = _mocker.CreateInstance<GetEmployeesListQuery>();
-        }
+    private GetEmployeesListQuery _query;
 
-        [Test]
-        public void TestExecuteShouldReturnListOfEmployees()
-        {
-            var results = _query.Execute();
+    private AutoMocker _mocker;
 
-            var result = results.Single();
+    private Employee _employee;
 
-            Assert.That(result.Id, Is.EqualTo(Id));
-            Assert.That(result.Name, Is.EqualTo(Name));
-        }
+    private const int Id = 1;
+
+    private const string Name = "Employee 1";
+
+    [ Test ]
+    public void TestExecuteShouldReturnListOfEmployees()
+    {
+        List<EmployeeModel> results = _query.Execute();
+
+        EmployeeModel result = results.Single();
+
+        Assert.That(result.Id,   Is.EqualTo(Id));
+        Assert.That(result.Name, Is.EqualTo(Name));
     }
 }

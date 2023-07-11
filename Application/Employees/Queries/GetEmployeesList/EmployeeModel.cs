@@ -1,9 +1,8 @@
-﻿namespace CleanArchitecture.Application.Employees.Queries.GetEmployeesList
-{
-    public class EmployeeModel
-    {
-        public int Id { get; set; }
+﻿namespace CleanArchitecture.Application.Employees.Queries.GetEmployeesList;
 
-        public string Name { get; set; }
-    }
+public sealed class EmployeeModel
+{
+    public int Id { get; init; }
+
+    public string Name { get; init; }
 }

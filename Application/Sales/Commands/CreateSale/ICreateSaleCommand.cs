@@ -1,7 +1,6 @@
-﻿namespace CleanArchitecture.Application.Sales.Commands.CreateSale
+﻿namespace CleanArchitecture.Application.Sales.Commands.CreateSale;
+
+public interface ICreateSaleCommand
 {
-    public interface ICreateSaleCommand
-    {
-        void Execute(CreateSaleModel model);
-    }
+    void Execute(CreateSaleModel model);
 }

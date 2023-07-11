@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿namespace CleanArchitecture.Application.Sales.Commands.CreateSale;
 
-namespace CleanArchitecture.Application.Sales.Commands.CreateSale
+public sealed class CreateSaleModel
 {
-    public class CreateSaleModel
-    {
-        public int CustomerId { get; set; }
+    public int CustomerId { get; init; }
 
-        public int EmployeeId { get; set; }
+    public int EmployeeId { get; init; }
 
-        public int ProductId { get; set; }
+    public int ProductId { get; init; }
 
-        public int Quantity { get; set; }        
-    }
+    public int Quantity { get; init; }
 }

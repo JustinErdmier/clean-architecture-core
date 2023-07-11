@@ -1,38 +1,41 @@
 ﻿using Microsoft.OpenApi.Models;
+
 using Swashbuckle.AspNetCore.SwaggerGen;
-using System.Collections.Generic;
 
 //TODO: Move to Shared folder or Common project?
 
-namespace CleanArchitecture.Service
+namespace CleanArchitecture.Service;
+
+public sealed class LowercaseDocumentFilter : IDocumentFilter
 {
-    public class LowercaseDocumentFilter : IDocumentFilter
+    public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
     {
-        public void Apply(OpenApiDocument swaggerDoc, DocumentFilterContext context)
+        OpenApiPaths paths = swaggerDoc.Paths;
+
+        var newPaths = new Dictionary<string, OpenApiPathItem>();
+
+        var removeKeys = new List<string>();
+
+        foreach (KeyValuePair<string, OpenApiPathItem> path in paths)
         {
-            var paths = swaggerDoc.Paths;
-         
-            var newPaths = new Dictionary<string, OpenApiPathItem>();
+            string newKey = path.Key.ToLower();
 
-            var removeKeys = new List<string>();
+            if (newKey == path.Key)
+                continue;
 
-            foreach (var path in paths)
-            {
-                var newKey = path.Key.ToLower();
+            removeKeys.Add(path.Key);
 
-                if (newKey != path.Key)
-                {
-                    removeKeys.Add(path.Key);
+            newPaths.Add(newKey, path.Value);
+        }
 
-                    newPaths.Add(newKey, path.Value);
-                }
-            }
+        foreach (KeyValuePair<string, OpenApiPathItem> path in newPaths)
+        {
+            swaggerDoc.Paths.Add(path.Key, path.Value);
+        }
 
-            foreach (var path in newPaths)
-                swaggerDoc.Paths.Add(path.Key, path.Value);
-
-            foreach (var key in removeKeys)
-                swaggerDoc.Paths.Remove(key);
+        foreach (string key in removeKeys)
+        {
+            swaggerDoc.Paths.Remove(key);
         }
     }
 }

@@ -1,38 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CleanArchitecture.Infrastructure.Network;
+﻿using CleanArchitecture.Infrastructure.Network;
+
 using Moq;
 using Moq.AutoMock;
+
 using NUnit.Framework;
 
-namespace CleanArchitecture.Infrastructure.Inventory
+namespace CleanArchitecture.Infrastructure.Inventory;
+
+[ TestFixture ]
+public sealed class InventoryServiceTests
 {
-    [TestFixture]
-    public class InventoryServiceTests
+    [ SetUp ]
+    public void SetUp()
     {
-        private InventoryService _service;
-        private AutoMocker _mocker;
+        _mocker = new AutoMocker();
 
-        private const string Address = "http://abc123.com/inventory/products/1/notifysaleoccured/";
-        private const string Json = "{\"quantity\": 2}";
+        _service = _mocker.CreateInstance<InventoryService>();
+    }
 
-        [SetUp]
-        public void SetUp()
-        {
-            _mocker = new AutoMocker();
+    private InventoryService _service;
 
-            _service = _mocker.CreateInstance<InventoryService>();
-        }
+    private AutoMocker _mocker;
 
-        [Test]
-        public void TestNotifySaleOccurredShouldNotifyInventorySystem()
-        {
-            _service.NotifySaleOccurred(1, 2);
+    private const string Address = "https://abc123.com/inventory/products/1/notifysaleoccured/";
 
-            _mocker.GetMock<IHttpClientWrapper>()
-                .Verify(p => p.Post(Address, Json),
-                    Times.Once);
-        }
+    private const string Json = "{\"quantity\": 2}";
+
+    [ Test ]
+    public void TestNotifySaleOccurredShouldNotifyInventorySystem()
+    {
+        _service.NotifySaleOccurred(1, 2);
+
+        _mocker.GetMock<IHttpClientWrapper>()
+               .Verify(p => p.Post(Address, Json),
+                       Times.Once);
     }
 }

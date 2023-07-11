@@ -1,30 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CleanArchitecture.Application.Interfaces;
+﻿using CleanArchitecture.Application.Interfaces;
 
-namespace CleanArchitecture.Application.Customers.Queries.GetCustomerList
+namespace CleanArchitecture.Application.Customers.Queries.GetCustomerList;
+
+public sealed class GetCustomersListQuery
+    : IGetCustomersListQuery
 {
-    public class GetCustomersListQuery 
-        : IGetCustomersListQuery
+    private readonly IDatabaseService _database;
+
+    public GetCustomersListQuery(IDatabaseService database) => _database = database;
+
+    public List<CustomerModel> Execute()
     {
-        private readonly IDatabaseService _database;
+        IQueryable<CustomerModel> customers = _database.Customers
+                                                       .Select(p => new CustomerModel
+                                                       {
+                                                           Id   = p.Id,
+                                                           Name = p.Name
+                                                       });
 
-        public GetCustomersListQuery(IDatabaseService database)
-        {
-            _database = database;
-        }
-
-        public List<CustomerModel> Execute()
-        {
-            var customers = _database.Customers
-                .Select(p => new CustomerModel()
-                {
-                    Id = p.Id, 
-                    Name = p.Name
-                });
-
-            return customers.ToList();
-        }
+        return customers.ToList();
     }
 }

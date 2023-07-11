@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿namespace CleanArchitecture.Common.Dates;
 
-namespace CleanArchitecture.Common.Dates
+public interface IDateService
 {
-    public interface IDateService
-    {
-        DateTime GetDate();
-    }
+    DateTime GetDate();
 }

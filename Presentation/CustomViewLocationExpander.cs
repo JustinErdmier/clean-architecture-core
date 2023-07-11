@@ -1,22 +1,20 @@
-﻿using System;
-using Microsoft.AspNetCore.Mvc.Razor;
+﻿using Microsoft.AspNetCore.Mvc.Razor;
 
-namespace CleanArchitecture.Presentation
+namespace CleanArchitecture.Presentation;
+
+public sealed class CustomViewLocationExpander : IViewLocationExpander
 {
-    public class CustomViewLocationExpander : IViewLocationExpander
-    {        
-        public IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations)
+    public IEnumerable<string> ExpandViewLocations(ViewLocationExpanderContext context, IEnumerable<string> viewLocations)
+    {
+        return new[]
         {
-            return new[]
-            {
-                "~/{1}/Views/{0}.cshtml",
-                "~/Shared/Views/{0}.cshtml"
-            };
-        }
+            "~/{1}/Views/{0}.cshtml",
+            "~/Shared/Views/{0}.cshtml"
+        };
+    }
 
-        public void PopulateValues(ViewLocationExpanderContext context)
-        {
-            // Nothing needs to be done here
-        }
+    public void PopulateValues(ViewLocationExpanderContext context)
+    {
+        // Nothing needs to be done here
     }
 }

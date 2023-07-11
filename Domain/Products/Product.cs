@@ -1,14 +1,12 @@
-﻿using System;
-using CleanArchitecture.Domain.Common;
+﻿using CleanArchitecture.Domain.Common;
 
-namespace CleanArchitecture.Domain.Products
+namespace CleanArchitecture.Domain.Products;
+
+public sealed class Product : IEntity
 {
-    public class Product : IEntity
-    {
-        public int Id { get; set; }
+    public string Name { get; set; }
 
-        public string Name { get; set; }
+    public decimal Price { get; init; }
 
-        public decimal Price { get; set; }
-    }
+    public int Id { get; set; }
 }

@@ -1,51 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using CleanArchitecture.Application.Interfaces;
+using CleanArchitecture.Domain.Products;
+
 using Moq.AutoMock;
 using Moq.EntityFrameworkCore;
-using CleanArchitecture.Application.Interfaces;
-using CleanArchitecture.Domain.Products;
+
 using NUnit.Framework;
 
-namespace CleanArchitecture.Application.Products.Queries.GetProductsList
+namespace CleanArchitecture.Application.Products.Queries.GetProductsList;
+
+[ TestFixture ]
+public sealed class GetProductsListQueryTests
 {
-    [TestFixture]
-    public class GetProductsListQueryTests
+    [ SetUp ]
+    public void SetUp()
     {
-        private GetProductsListQuery _query;
-        private AutoMocker _mocker;
-        private Product _product;
+        _mocker = new AutoMocker();
 
-        private const int Id = 1;
-        private const string Name = "Product 1";
-
-        [SetUp]
-        public void SetUp()
+        _product = new Product
         {
-            _mocker = new AutoMocker();
+            Id   = Id,
+            Name = Name
+        };
 
-            _product = new Product()
-            {
-                Id = Id,
-                Name = Name
-            };
+        _mocker.GetMock<IDatabaseService>()
+               .Setup(p => p.Products)
+               .ReturnsDbSet(new List<Product> { _product });
 
-            _mocker.GetMock<IDatabaseService>()
-                .Setup(p => p.Products)
-                .ReturnsDbSet(new List<Product> { _product });
+        _query = _mocker.CreateInstance<GetProductsListQuery>();
+    }
 
-            _query = _mocker.CreateInstance<GetProductsListQuery>();
-        }
+    private GetProductsListQuery _query;
 
-        [Test]
-        public void TestExecuteShouldReturnListOfProducts()
-        {
-            var results = _query.Execute();
+    private AutoMocker _mocker;
 
-            var result = results.Single();
+    private Product _product;
 
-            Assert.That(result.Id, Is.EqualTo(Id));
-            Assert.That(result.Name, Is.EqualTo(Name));
-        }
+    private const int Id = 1;
+
+    private const string Name = "Product 1";
+
+    [ Test ]
+    public void TestExecuteShouldReturnListOfProducts()
+    {
+        List<ProductModel> results = _query.Execute();
+
+        ProductModel result = results.Single();
+
+        Assert.That(result.Id,   Is.EqualTo(Id));
+        Assert.That(result.Name, Is.EqualTo(Name));
     }
 }

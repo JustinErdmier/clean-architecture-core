@@ -1,60 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Moq.AutoMock;
+﻿using System.Reflection;
+using System.Runtime.Loader;
+
 using CleanArchitecture.Application.Interfaces;
 using CleanArchitecture.Common.Dates;
-using System.Runtime.Loader;
-using Microsoft.Extensions.DependencyInjection;
+
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace CleanArchitecture.Specification.Shared
+using Moq;
+using Moq.AutoMock;
+
+namespace CleanArchitecture.Specification.Shared;
+
+public sealed class AppContext
 {
-    public class AppContext
+    public readonly IServiceProvider Container;
+
+    public readonly IDatabaseService DatabaseService;
+
+    public readonly IDateService DateService;
+
+    public readonly IInventoryService InventoryService;
+
+    public readonly AutoMocker Mocker;
+
+    public AppContext()
     {
-        public AutoMocker Mocker;
-        public IServiceProvider Container;
-        public IDatabaseService DatabaseService;
-        public IInventoryService InventoryService;
-        public IDateService DateService;
+        Mocker = new AutoMocker();
 
-        public AppContext()
-        {
-            Mocker = new AutoMocker();
+        DbContextOptions<MockDatabaseService> options = new DbContextOptionsBuilder<MockDatabaseService>()
+                                                        .UseInMemoryDatabase(databaseName: "CleanArchitectureInMemory")
+                                                        .Options;
 
-            var options = new DbContextOptionsBuilder<MockDatabaseService>()
-                .UseInMemoryDatabase(databaseName: "CleanArchitectureInMemory")
-                .Options;
+        DatabaseService = new MockDatabaseService(options);
 
-            DatabaseService = new MockDatabaseService(options);                   
+        InventoryService = Mocker.GetMock<IInventoryService>().Object;
 
-            InventoryService =  Mocker.GetMock<IInventoryService>().Object;
+        Mock<IDateService> mockDateService = Mocker.GetMock<IDateService>();
 
-            var mockDateService = Mocker.GetMock<IDateService>();
+        mockDateService
+            .Setup(p => p.GetDate())
+            .Returns(DateTime.Parse("2001-02-03"));
 
-            mockDateService
-                .Setup(p => p.GetDate())
-                .Returns(DateTime.Parse("2001-02-03"));
+        DateService = mockDateService.Object;
 
-            DateService = mockDateService.Object;
+        string[] files = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory,
+                                            "CleanArchitecture*.dll");
 
-            var files = Directory.GetFiles(
-                AppDomain.CurrentDomain.BaseDirectory,
-                "CleanArchitecture*.dll");
+        IEnumerable<Assembly> assemblies = files
+            .Select(p => AssemblyLoadContext.Default.LoadFromAssemblyPath(p));
 
-            var assemblies = files
-                .Select(p => AssemblyLoadContext.Default.LoadFromAssemblyPath(p));
+        ServiceProvider provider = new ServiceCollection()
+                                   .Scan(p => p.FromAssemblies(assemblies)
+                                               .AddClasses()
+                                               .AsMatchingInterface())
+                                   .AddSingleton(_ => DatabaseService)
+                                   .AddSingleton(_ => InventoryService)
+                                   .AddSingleton(_ => DateService)
+                                   .BuildServiceProvider();
 
-            var provider = new ServiceCollection()
-                .Scan(p => p.FromAssemblies(assemblies)
-                    .AddClasses()
-                    .AsMatchingInterface())
-                .AddSingleton(_ => DatabaseService)
-                .AddSingleton(_ => InventoryService)
-                .AddSingleton(_ => DateService)
-                .BuildServiceProvider();
-
-            Container = provider;
-        }
+        Container = provider;
     }
 }

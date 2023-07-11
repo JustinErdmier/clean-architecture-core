@@ -1,40 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using CleanArchitecture.Application.Customers.Queries.GetCustomerList;
+
 using Moq.AutoMock;
-using CleanArchitecture.Application.Customers.Queries.GetCustomerList;
+
 using NUnit.Framework;
 
-namespace CleanArchitecture.Service.Customers
+namespace CleanArchitecture.Service.Customers;
+
+[ TestFixture ]
+public sealed class CustomersControllerTests
 {
-    [TestFixture]
-    public class CustomersControllerTests
+    [ SetUp ]
+    public void SetUp()
     {
-        private CustomersController _controller;
-        private AutoMocker _mocker;
+        _mocker = new AutoMocker();
 
-        [SetUp]
-        public void SetUp()
-        {
-            _mocker = new AutoMocker();
+        _controller = _mocker.CreateInstance<CustomersController>();
+    }
 
-            _controller = _mocker.CreateInstance<CustomersController>();
-        }
+    private CustomersController _controller;
 
-        [Test]
-        public void TestGetCustomersListShouldReturnListOfCustomers()
-        {
-            var customer = new CustomerModel();
+    private AutoMocker _mocker;
 
-            _mocker.GetMock<IGetCustomersListQuery>()
-                .Setup(p => p.Execute())
-                .Returns(new List<CustomerModel> { customer });
+    [ Test ]
+    public void TestGetCustomersListShouldReturnListOfCustomers()
+    {
+        var customer = new CustomerModel();
 
-            var results = _controller.Get();
+        _mocker.GetMock<IGetCustomersListQuery>()
+               .Setup(p => p.Execute())
+               .Returns(new List<CustomerModel> { customer });
 
-            Assert.That(results,
-                Contains.Item(customer));
-        }
+        IEnumerable<CustomerModel> results = _controller.Get();
+
+        Assert.That(results,
+                    Contains.Item(customer));
     }
 }

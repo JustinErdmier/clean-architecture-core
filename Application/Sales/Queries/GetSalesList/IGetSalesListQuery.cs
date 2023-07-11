@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
+﻿namespace CleanArchitecture.Application.Sales.Queries.GetSalesList;
 
-namespace CleanArchitecture.Application.Sales.Queries.GetSalesList
+public interface IGetSalesListQuery
 {
-    public interface IGetSalesListQuery
-    {
-        List<SalesListItemModel> Execute();
-    }
+    List<SalesListItemModel> Execute();
 }

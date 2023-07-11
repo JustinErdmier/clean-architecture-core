@@ -1,9 +1,8 @@
 using CleanArchitecture.Presentation.Sales.Models;
 
-namespace CleanArchitecture.Presentation.Sales.Services
+namespace CleanArchitecture.Presentation.Sales.Services;
+
+public interface ICreateSaleViewModelFactory
 {
-    public interface ICreateSaleViewModelFactory
-    {
-        CreateSaleViewModel Create();
-    }
+    CreateSaleViewModel Create();
 }

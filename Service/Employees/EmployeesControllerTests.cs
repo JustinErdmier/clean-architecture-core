@@ -1,40 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using CleanArchitecture.Application.Employees.Queries.GetEmployeesList;
+
 using Moq.AutoMock;
-using CleanArchitecture.Application.Employees.Queries.GetEmployeesList;
+
 using NUnit.Framework;
 
-namespace CleanArchitecture.Service.Employees
+namespace CleanArchitecture.Service.Employees;
+
+[ TestFixture ]
+public sealed class EmployeesControllerTests
 {
-    [TestFixture]
-    public class EmployeesControllerTests
+    [ SetUp ]
+    public void SetUp()
     {
-        private EmployeesController _controller;
-        private AutoMocker _mocker;
+        _mocker = new AutoMocker();
 
-        [SetUp]
-        public void SetUp()
-        {
-            _mocker = new AutoMocker();
+        _controller = _mocker.CreateInstance<EmployeesController>();
+    }
 
-            _controller = _mocker.CreateInstance<EmployeesController>();
-        }
+    private EmployeesController _controller;
 
-        [Test]
-        public void TestGetEmployeesListShouldReturnListOfEmployees()
-        {
-            var employee = new EmployeeModel();
+    private AutoMocker _mocker;
 
-            _mocker.GetMock<IGetEmployeesListQuery>()
-                .Setup(p => p.Execute())
-                .Returns(new List<EmployeeModel> {employee});
+    [ Test ]
+    public void TestGetEmployeesListShouldReturnListOfEmployees()
+    {
+        var employee = new EmployeeModel();
 
-            var results = _controller.Get();
+        _mocker.GetMock<IGetEmployeesListQuery>()
+               .Setup(p => p.Execute())
+               .Returns(new List<EmployeeModel> { employee });
 
-            Assert.That(results,
-                Contains.Item(employee));
-        }
+        IEnumerable<EmployeeModel> results = _controller.Get();
+
+        Assert.That(results,
+                    Contains.Item(employee));
     }
 }

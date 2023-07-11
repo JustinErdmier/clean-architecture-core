@@ -1,32 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+
 using Moq.AutoMock;
+
 using NUnit.Framework;
 
-namespace CleanArchitecture.Presentation.Home
+namespace CleanArchitecture.Presentation.Home;
+
+[ TestFixture ]
+public sealed class HomeControllerTests
 {
-    [TestFixture]
-    public class HomeControllerTests
+    [ SetUp ]
+    public void SetUp()
     {
-        private HomeController _controller;
-        private AutoMocker _mocker;
+        _mocker = new AutoMocker();
 
-        [SetUp]
-        public void SetUp()
-        {
-            _mocker = new AutoMocker();
+        _controller = _mocker.CreateInstance<HomeController>();
+    }
 
-            _controller = _mocker.CreateInstance<HomeController>();
-        }
+    private HomeController _controller;
 
-        [Test]
-        public void TestGetIndexShouldReturnView()
-        {
-            var result = _controller.Index();
+    private AutoMocker _mocker;
 
-            Assert.That(result, Is.TypeOf<ViewResult>());
-        }
+    [ Test ]
+    public void TestGetIndexShouldReturnView()
+    {
+        ViewResult result = _controller.Index();
+
+        Assert.That(result, Is.TypeOf<ViewResult>());
     }
 }

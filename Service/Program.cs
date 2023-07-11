@@ -1,34 +1,33 @@
+using System.Reflection;
 using System.Runtime.Loader;
 
 namespace CleanArchitecture.Service;
 
-class Program
+internal sealed class Program
 {
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
-        var files = Directory.GetFiles(
-            AppDomain.CurrentDomain.BaseDirectory,
-            "CleanArchitecture*.dll");
+        string[] files = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory,
+                                            "CleanArchitecture*.dll");
 
-        var assemblies = files
+        IEnumerable<Assembly> assemblies = files
             .Select(p => AssemblyLoadContext.Default.LoadFromAssemblyPath(p));
 
-        var builder = WebApplication.CreateBuilder(args);
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddControllers();
 
         builder.Services.AddEndpointsApiExplorer();
 
-        builder.Services.AddSwaggerGen(
-            p => p.DocumentFilter<LowercaseDocumentFilter>());
+        builder.Services.AddSwaggerGen(p => p.DocumentFilter<LowercaseDocumentFilter>());
 
         builder.Services.AddAdvancedDependencyInjection();
 
         builder.Services.Scan(p => p.FromAssemblies(assemblies)
-            .AddClasses()
-            .AsMatchingInterface());
+                                    .AddClasses()
+                                    .AsMatchingInterface());
 
-        var app = builder.Build();
+        WebApplication app = builder.Build();
 
         if (app.Environment.IsDevelopment())
         {

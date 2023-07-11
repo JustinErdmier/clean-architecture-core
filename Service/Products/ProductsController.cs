@@ -1,26 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using CleanArchitecture.Application.Products.Queries.GetProductsList;
+
 using Microsoft.AspNetCore.Mvc;
-using CleanArchitecture.Application.Products.Queries.GetProductsList;
 
-namespace CleanArchitecture.Service.Products
+namespace CleanArchitecture.Service.Products;
+
+[ ApiController, Route("api/[controller]") ]
+public sealed class ProductsController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductsController : ControllerBase
-    {
-        private readonly IGetProductsListQuery _query;
+    private readonly IGetProductsListQuery _query;
 
-        public ProductsController(IGetProductsListQuery query)
-        {
-            _query = query;
-        }
+    public ProductsController(IGetProductsListQuery query) => _query = query;
 
-        [HttpGet]
-        public IEnumerable<ProductModel> Get()
-        {
-            return _query.Execute();
-        }
-    }
+    [ HttpGet ]
+    public IEnumerable<ProductModel> Get() => _query.Execute();
 }

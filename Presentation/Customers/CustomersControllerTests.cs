@@ -1,41 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using CleanArchitecture.Application.Customers.Queries.GetCustomerList;
+
+using Microsoft.AspNetCore.Mvc;
+
 using Moq.AutoMock;
-using CleanArchitecture.Application.Customers.Queries.GetCustomerList;
+
 using NUnit.Framework;
 
-namespace CleanArchitecture.Presentation.Customers
+namespace CleanArchitecture.Presentation.Customers;
+
+[ TestFixture ]
+public sealed class CustomersControllerTests
 {
-    [TestFixture]
-    public class CustomersControllerTests
+    [ SetUp ]
+    public void SetUp()
     {
-        private CustomersController _controller;
-        private AutoMocker _mocker;
-        private CustomerModel _model;
+        _model = new CustomerModel();
 
-        [SetUp]
-        public void SetUp()
-        {
-            _model = new CustomerModel();
+        _mocker = new AutoMocker();
 
-            _mocker = new AutoMocker();
+        _mocker.GetMock<IGetCustomersListQuery>()
+               .Setup(p => p.Execute())
+               .Returns(new List<CustomerModel> { _model });
 
-            _mocker.GetMock<IGetCustomersListQuery>()
-                .Setup(p => p.Execute())
-                .Returns(new List<CustomerModel> { _model });
+        _controller = _mocker.CreateInstance<CustomersController>();
+    }
 
-            _controller = _mocker.CreateInstance<CustomersController>();
-        }
+    private CustomersController _controller;
 
-        [Test]
-        public void TestGetIndexShouldReturnListOfCustomers()
-        {
-            var viewResult = _controller.Index();
+    private AutoMocker _mocker;
 
-            var result = (List<CustomerModel>) viewResult.Model;
+    private CustomerModel _model;
 
-            Assert.That(result.Single(), Is.EqualTo(_model));
-        }
+    [ Test ]
+    public void TestGetIndexShouldReturnListOfCustomers()
+    {
+        ViewResult viewResult = _controller.Index();
+
+        var result = (List<CustomerModel>) viewResult.Model;
+
+        Assert.IsNotNull(result);
+        Assert.That(result.Single(), Is.EqualTo(_model));
     }
 }

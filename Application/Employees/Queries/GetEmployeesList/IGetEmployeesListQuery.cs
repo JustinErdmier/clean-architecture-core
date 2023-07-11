@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
+﻿namespace CleanArchitecture.Application.Employees.Queries.GetEmployeesList;
 
-namespace CleanArchitecture.Application.Employees.Queries.GetEmployeesList
+public interface IGetEmployeesListQuery
 {
-    public interface IGetEmployeesListQuery
-    {
-        List<EmployeeModel> Execute();
-    }
+    List<EmployeeModel> Execute();
 }

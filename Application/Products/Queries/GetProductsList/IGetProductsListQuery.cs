@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
+﻿namespace CleanArchitecture.Application.Products.Queries.GetProductsList;
 
-namespace CleanArchitecture.Application.Products.Queries.GetProductsList
+public interface IGetProductsListQuery
 {
-    public interface IGetProductsListQuery
-    {
-        List<ProductModel> Execute();
-    }
+    List<ProductModel> Execute();
 }

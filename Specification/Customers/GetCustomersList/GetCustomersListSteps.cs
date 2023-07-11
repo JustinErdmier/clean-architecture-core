@@ -1,53 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CleanArchitecture.Application.Customers.Queries.GetCustomerList;
+﻿using CleanArchitecture.Application.Customers.Queries.GetCustomerList;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using NUnit.Framework;
+
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
+
 using AppContext = CleanArchitecture.Specification.Shared.AppContext;
 
-namespace CleanArchitecture.Specification.Customers.GetCustomersList
+namespace CleanArchitecture.Specification.Customers.GetCustomersList;
+
+[ Binding ]
+public sealed class GetCustomersListSteps
 {
-    [Binding]
-    public class GetCustomersListSteps
+    private readonly AppContext _context;
+
+    private List<CustomerModel> _results;
+
+    public GetCustomersListSteps(AppContext context)
     {
-        private readonly AppContext _context;
-        private List<CustomerModel> _results;
+        _context = context;
+        _results = new List<CustomerModel>();
+    }
 
-        public GetCustomersListSteps(AppContext context)
+    [ When(@"I request a list of customers") ]
+    public void WhenIRequestAListOfCustomers()
+    {
+        var query = _context.Container
+                            .GetService<IGetCustomersListQuery>();
+
+        _results = query.Execute();
+    }
+
+    [ Then(@"the following customers should be returned:") ]
+    public void ThenTheFollowingCustomersShouldBeReturned(Table table)
+    {
+        List<CustomerModel> models = table.CreateSet<CustomerModel>().ToList();
+
+        for (int i = 0; i < models.Count; i++)
         {
-            _context = context;
-            _results = new List<CustomerModel>();
-        }
+            CustomerModel model = models[i];
 
-        [When(@"I request a list of customers")]
-        public void WhenIRequestAListOfCustomers()
-        {
-            var query = _context.Container
-                .GetService<IGetCustomersListQuery>();
+            CustomerModel result = _results[i];
 
-            _results = query.Execute();
-        }
-        
-        [Then(@"the following customers should be returned:")]
-        public void ThenTheFollowingCustomersShouldBeReturned(Table table)
-        {
-            var models = table.CreateSet<CustomerModel>().ToList();
+            Assert.That(result.Id,
+                        Is.EqualTo(model.Id));
 
-            for (var i = 0; i < models.Count; i++)
-            {
-                var model = models[i];
-
-                var result = _results[i];
-
-                Assert.That(result.Id,
-                    Is.EqualTo(model.Id));
-
-                Assert.That(result.Name,
-                    Is.EqualTo(model.Name));
-            }
+            Assert.That(result.Name,
+                        Is.EqualTo(model.Name));
         }
     }
 }

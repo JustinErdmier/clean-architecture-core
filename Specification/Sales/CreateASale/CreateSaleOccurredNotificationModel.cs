@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿// ReSharper disable UnusedAutoPropertyAccessor.Global
 
-namespace CleanArchitecture.Specification.Sales.CreateASale
+namespace CleanArchitecture.Specification.Sales.CreateASale;
+
+public sealed class CreateSaleOccurredNotificationModel
 {
-    public class CreateSaleOccurredNotificationModel
-    {
-        public int ProductId { get; set; }
+    public int ProductId { get; set; }
 
-        public int Quantity { get; set; }
-    }
+    public int Quantity { get; set; }
 }

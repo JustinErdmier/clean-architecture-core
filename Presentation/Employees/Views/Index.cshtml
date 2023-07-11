@@ -3,21 +3,23 @@
 }
 
 <h2>Employees</h2>
+
 <table class="table table-striped">
     <thead>
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-        </tr>
+    <tr>
+        <th>ID</th>
+        <th>Name</th>
+    </tr>
     </thead>
+
     <tbody>
-        @foreach (var employee in Model)
-        {
-            <tr>
-                <td>@employee.Id</td>
-                <td>@employee.Name</td>
-            </tr>
-        }
+    @* TODO: Look into why we're using dynamic here and not strongly typing the model with `@model` *@
+    @foreach (dynamic employee in Model)
+    {
+        <tr>
+            <td>@employee.Id</td>
+            <td>@employee.Name</td>
+        </tr>
+    }
     </tbody>
 </table>
-

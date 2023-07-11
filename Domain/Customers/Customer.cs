@@ -1,12 +1,10 @@
-﻿using System;
-using CleanArchitecture.Domain.Common;
+﻿using CleanArchitecture.Domain.Common;
 
-namespace CleanArchitecture.Domain.Customers
+namespace CleanArchitecture.Domain.Customers;
+
+public sealed class Customer : IEntity
 {
-    public class Customer : IEntity
-    {
-        public int Id { get; set; }
+    public string Name { get; set; }
 
-        public string Name { get; set; }
-    }
+    public int Id { get; set; }
 }

@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿namespace CleanArchitecture.Infrastructure.Network;
 
-namespace CleanArchitecture.Infrastructure.Network
+public interface IHttpClientWrapper
 {
-    public interface IHttpClientWrapper
-    {
-        void Post(string address, string json);
-    }
+    void Post(string address, string json);
 }

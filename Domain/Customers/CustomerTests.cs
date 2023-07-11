@@ -1,41 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
-namespace CleanArchitecture.Domain.Customers
+namespace CleanArchitecture.Domain.Customers;
+
+[ TestFixture ]
+public sealed class CustomerTests
 {
-    [TestFixture]
-    public class CustomerTests
+    [ SetUp ]
+    public void SetUp()
     {
-        private Customer _customer;
-        private const int Id = 1;
-        private const string Name = "Test";
+        _customer = new Customer();
+    }
 
-        [SetUp]
-        public void SetUp()
-        {
-            _customer = new Customer();
-        }
+    private Customer _customer;
 
-        [Test]
-        public void TestSetAndGetId()
-        {
-            _customer.Id = Id;
+    private const int Id = 1;
 
-            Assert.That(_customer.Id, 
-                Is.EqualTo(Id));
-        }
+    private const string Name = "Test";
 
-        [Test]
-        public void TestSetAndGetName()
-        {
-            _customer.Name = Name;
+    [ Test ]
+    public void TestSetAndGetId()
+    {
+        _customer.Id = Id;
 
-            Assert.That(_customer.Name, 
-                Is.EqualTo(Name));
-        }
+        Assert.That(_customer.Id,
+                    Is.EqualTo(Id));
+    }
+
+    [ Test ]
+    public void TestSetAndGetName()
+    {
+        _customer.Name = Name;
+
+        Assert.That(_customer.Name,
+                    Is.EqualTo(Name));
     }
 }

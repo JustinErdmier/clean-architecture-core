@@ -1,67 +1,69 @@
-﻿using System;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using CleanArchitecture.Application.Sales.Commands.CreateSale;
+﻿using CleanArchitecture.Application.Sales.Commands.CreateSale;
 using CleanArchitecture.Application.Sales.Queries.GetSaleDetail;
 using CleanArchitecture.Application.Sales.Queries.GetSalesList;
 using CleanArchitecture.Presentation.Sales.Models;
 using CleanArchitecture.Presentation.Sales.Services;
 
-namespace CleanArchitecture.Presentation.Sales
+using Microsoft.AspNetCore.Mvc;
+
+namespace CleanArchitecture.Presentation.Sales;
+
+[ Route("sales") ]
+public sealed class SalesController : Controller
 {
-    [Route("sales")]
-    public class SalesController : Controller
+    private readonly ICreateSaleCommand _createCommand;
+
+    private readonly ICreateSaleViewModelFactory _factory;
+
+    private readonly IGetSaleDetailQuery _saleDetailQuery;
+
+    private readonly IGetSalesListQuery _salesListQuery;
+
+    public SalesController(IGetSalesListQuery          salesListQuery,
+                           IGetSaleDetailQuery         saleDetailQuery,
+                           ICreateSaleViewModelFactory factory,
+                           ICreateSaleCommand          createCommand)
     {
-        private readonly IGetSalesListQuery _salesListQuery;
-        private readonly IGetSaleDetailQuery _saleDetailQuery;
-        private readonly ICreateSaleViewModelFactory _factory;
-        private readonly ICreateSaleCommand _createCommand;
+        _salesListQuery  = salesListQuery;
+        _saleDetailQuery = saleDetailQuery;
+        _factory         = factory;
+        _createCommand   = createCommand;
+    }
 
-        public SalesController(
-            IGetSalesListQuery salesListQuery,
-            IGetSaleDetailQuery saleDetailQuery,
-            ICreateSaleViewModelFactory factory,
-            ICreateSaleCommand createCommand)
-        {
-            _salesListQuery = salesListQuery;
-            _saleDetailQuery = saleDetailQuery;
-            _factory = factory;
-            _createCommand = createCommand;
-        }
+    [ Route("") ]
+    public ViewResult Index()
+    {
+        List<SalesListItemModel> sales = _salesListQuery.Execute();
 
-        [Route("")]
-        public ViewResult Index()
-        {
-            var sales = _salesListQuery.Execute();
+        // ReSharper disable once Mvc.ViewNotResolved
+        return View(sales);
+    }
 
-            return View(sales);
-        }
+    [ Route("{id:int}") ]
+    public ViewResult Detail(int id)
+    {
+        SaleDetailModel sale = _saleDetailQuery.Execute(id);
 
-        [Route("{id:int}")]
-        public ViewResult Detail(int id)
-        {
-            var sale = _saleDetailQuery.Execute(id);
+        // ReSharper disable once Mvc.ViewNotResolved
+        return View(sale);
+    }
 
-            return View(sale);
-        }
+    [ Route("create") ]
+    public ViewResult Create()
+    {
+        CreateSaleViewModel viewModel = _factory.Create();
 
-        [Route("create")]
-        public ViewResult Create()
-        {
-            var viewModel = _factory.Create();
+        // ReSharper disable once Mvc.ViewNotResolved
+        return View(viewModel);
+    }
 
-            return View(viewModel);
-        }
+    [ Route("create"), HttpPost ]
+    public IActionResult Create(CreateSaleViewModel viewModel)
+    {
+        CreateSaleModel model = viewModel.Sale;
 
-        [Route("create")]
-        [HttpPost]
-        public IActionResult Create(CreateSaleViewModel viewModel)
-        {
-            var model = viewModel.Sale;            
+        _createCommand.Execute(model);
 
-            _createCommand.Execute(model);
-
-            return RedirectToAction("index", "sales");
-        }
+        return RedirectToAction("index", "sales");
     }
 }

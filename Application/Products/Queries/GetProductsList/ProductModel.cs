@@ -1,11 +1,10 @@
-﻿namespace CleanArchitecture.Application.Products.Queries.GetProductsList
+﻿namespace CleanArchitecture.Application.Products.Queries.GetProductsList;
+
+public sealed class ProductModel
 {
-    public class ProductModel
-    {
-        public int Id { get; set; }
+    public int Id { get; init; }
 
-        public string Name { get; set; }
+    public string Name { get; init; }
 
-        public decimal UnitPrice { get; set; }
-    }
+    public decimal UnitPrice { get; init; }
 }

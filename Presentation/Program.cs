@@ -1,35 +1,34 @@
+using System.Reflection;
 using System.Runtime.Loader;
+
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.Extensions.FileProviders;
 
 namespace CleanArchitecture.Presentation;
 
-class Program
+internal sealed class Program
 {
-    static void Main(string[] args)
+    private static void Main(string[] args)
     {
-        var files = Directory.GetFiles(
-            AppDomain.CurrentDomain.BaseDirectory,
-            "CleanArchitecture*.dll");
+        string[] files = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory,
+                                            "CleanArchitecture*.dll");
 
-        var assemblies = files
+        IEnumerable<Assembly> assemblies = files
             .Select(p => AssemblyLoadContext.Default.LoadFromAssemblyPath(p));
 
-        var builder = WebApplication.CreateBuilder(args);
+        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
         builder.Services.AddControllersWithViews();
 
-        builder.Services.Configure<RazorViewEngineOptions>(
-            p => p.ViewLocationExpanders.Add(
-                new CustomViewLocationExpander()));
+        builder.Services.Configure<RazorViewEngineOptions>(p => p.ViewLocationExpanders.Add(new CustomViewLocationExpander()));
 
         builder.Services.Scan(p => p.FromAssemblies(assemblies)
-            .AddClasses()
-            .AsMatchingInterface());
+                                    .AddClasses()
+                                    .AsMatchingInterface());
 
-        var app = builder.Build();
+        WebApplication app = builder.Build();
 
-        if (!app.Environment.IsDevelopment())
+        if (! app.Environment.IsDevelopment())
         {
             app.UseExceptionHandler("/Home/Error");
 
@@ -38,23 +37,19 @@ class Program
 
         app.UseHttpsRedirection();
 
-        app.UseStaticFiles(
-            new StaticFileOptions 
-            {  
-                FileProvider = new PhysicalFileProvider(
-                    Path.Combine(
-                        Directory.GetCurrentDirectory(),
-                        "Content")),
-                RequestPath = "/content"                 
-            });
+        app.UseStaticFiles(new StaticFileOptions
+        {
+            FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(),
+                                                                 "Content")),
+            RequestPath = "/content"
+        });
 
         app.UseRouting();
 
         app.UseAuthorization();
 
-        app.MapControllerRoute(
-            name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
+        app.MapControllerRoute(name: "default",
+                               pattern: "{controller=Home}/{action=Index}/{id?}");
 
         app.UseAdvancedDependencyInjection();
 

@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿namespace CleanArchitecture.Common.Dates;
 
-namespace CleanArchitecture.Common.Dates
+public sealed class DateService : IDateService
 {
-    public class DateService : IDateService
-    {
-        public DateTime GetDate()
-        {
-            return DateTime.Now.Date;
-        }
-    }
+    public DateTime GetDate() => DateTime.Now.Date;
 }

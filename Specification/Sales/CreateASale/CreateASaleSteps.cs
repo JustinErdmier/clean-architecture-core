@@ -1,111 +1,114 @@
-﻿using System;
-using System.Linq;
-using CleanArchitecture.Application.Interfaces;
+﻿using CleanArchitecture.Application.Interfaces;
 using CleanArchitecture.Application.Sales.Commands.CreateSale;
 using CleanArchitecture.Common.Dates;
+using CleanArchitecture.Domain.Sales;
 using CleanArchitecture.Specification.Shared;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using Moq;
+
 using NUnit.Framework;
+
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
+
 using AppContext = CleanArchitecture.Specification.Shared.AppContext;
 
-namespace CleanArchitecture.Specification.Sales.CreateASale
+namespace CleanArchitecture.Specification.Sales.CreateASale;
+
+[ Binding ]
+public sealed class CreateASaleSteps
 {
-    [Binding]
-    public class CreateASaleSteps
+    private readonly AppContext _context;
+
+    private CreateSaleModel _model;
+
+    public CreateASaleSteps(AppContext context)
     {
-        private readonly AppContext _context;
-        private CreateSaleModel _model;
+        _context = context;
+        _model   = new CreateSaleModel();
+    }
 
-        public CreateASaleSteps(AppContext context)
-        {
-            _context = context;
-            _model = new CreateSaleModel();
-        }
+    [ Given(@"the following sale info:") ]
+    public void GivenTheFollowingSaleInfo(Table table)
+    {
+        var saleInfo = table.CreateInstance<CreateSaleInfoModel>();
 
-        [Given(@"the following sale info:")]
-        public void GivenTheFollowingSaleInfo(Table table)
-        {
-            var saleInfo = table.CreateInstance<CreateSaleInfoModel>();
-
-            _context.Mocker.GetMock<IDateService>()
+        _context.Mocker.GetMock<IDateService>()
                 .Setup(p => p.GetDate())
                 .Returns(saleInfo.Date);
 
-            var mockDatabase = _context.DatabaseService;
-               
-            var lookup = new DatabaseLookup(mockDatabase);
+        IDatabaseService mockDatabase = _context.DatabaseService;
 
-            _model = new CreateSaleModel
-            {
-                CustomerId = lookup.GetCustomerId(saleInfo.Customer),
-                EmployeeId = lookup.GetEmployeeId(saleInfo.Employee),
-                ProductId = lookup.GetProductIdByName(saleInfo.Product),
-                Quantity = saleInfo.Quantity
-            };
-        }
-        
-        [When(@"I create a sale")]
-        public void WhenICreateASale()
+        var lookup = new DatabaseLookup(mockDatabase);
+
+        _model = new CreateSaleModel
         {
-            var command = _context.Container
-                .GetService<ICreateSaleCommand>();
+            CustomerId = lookup.GetCustomerId(saleInfo.Customer),
+            EmployeeId = lookup.GetEmployeeId(saleInfo.Employee),
+            ProductId  = lookup.GetProductIdByName(saleInfo.Product),
+            Quantity   = saleInfo.Quantity
+        };
+    }
 
-            command.Execute(_model);
-        }
-        
-        [Then(@"the following sales record should be recorded:")]
-        public void ThenTheFollowingSalesRecordShouldBeRecorded(Table table)
-        {
-            var saleRecord = table.CreateInstance<CreateSaleRecordModel>();
+    [ When(@"I create a sale") ]
+    public void WhenICreateASale()
+    {
+        var command = _context.Container
+                              .GetService<ICreateSaleCommand>();
 
-            var database = _context.DatabaseService;
+        command.Execute(_model);
+    }
 
-            var sale = database.Sales.Last();
+    [ Then(@"the following sales record should be recorded:") ]
+    public void ThenTheFollowingSalesRecordShouldBeRecorded(Table table)
+    {
+        var saleRecord = table.CreateInstance<CreateSaleRecordModel>();
 
-            var lookup = new DatabaseLookup(database);
+        IDatabaseService database = _context.DatabaseService;
 
-            var customerId = lookup.GetCustomerId(saleRecord.Customer);
+        Sale sale = database.Sales.Last();
 
-            var employeeId = lookup.GetEmployeeId(saleRecord.Employee);
+        var lookup = new DatabaseLookup(database);
 
-            var productId = lookup.GetProductIdByName(saleRecord.Product);
+        int customerId = lookup.GetCustomerId(saleRecord.Customer);
 
-            Assert.That(sale.Date, 
-                Is.EqualTo(saleRecord.Date));
+        int employeeId = lookup.GetEmployeeId(saleRecord.Employee);
 
-            Assert.That(sale.Customer.Id,
-                Is.EqualTo(customerId));
+        int productId = lookup.GetProductIdByName(saleRecord.Product);
 
-            Assert.That(sale.Employee.Id, 
-                Is.EqualTo(employeeId));
+        Assert.That(sale.Date,
+                    Is.EqualTo(saleRecord.Date));
 
-            Assert.That(sale.Product.Id,
-                Is.EqualTo(productId));
+        Assert.That(sale.Customer.Id,
+                    Is.EqualTo(customerId));
 
-            Assert.That(sale.UnitPrice, 
-                Is.EqualTo(saleRecord.UnitPrice));
+        Assert.That(sale.Employee.Id,
+                    Is.EqualTo(employeeId));
 
-            Assert.That(sale.Quantity,
-                Is.EqualTo(saleRecord.Quantity));
+        Assert.That(sale.Product.Id,
+                    Is.EqualTo(productId));
 
-            Assert.That(sale.TotalPrice,
-                Is.EqualTo(saleRecord.TotalPrice));
-        }
+        Assert.That(sale.UnitPrice,
+                    Is.EqualTo(saleRecord.UnitPrice));
 
-        [Then(@"the following sale-occurred notification should be sent to the inventory system:")]
-        public void ThenTheFollowingNotificationThatASaleOccurredShouldBeSentToTheInventorySystem(Table table)
-        {
-            var notification = table.CreateInstance<CreateSaleOccurredNotificationModel>();
+        Assert.That(sale.Quantity,
+                    Is.EqualTo(saleRecord.Quantity));
 
-            var mockInventoryClient = _context.Mocker.GetMock<IInventoryService>();
+        Assert.That(sale.TotalPrice,
+                    Is.EqualTo(saleRecord.TotalPrice));
+    }
 
-            mockInventoryClient.Verify(p => p.NotifySaleOccurred(
-                    notification.ProductId, 
-                    notification.Quantity),
-                Times.Once);
-        }
+    [ Then(@"the following sale-occurred notification should be sent to the inventory system:") ]
+    public void ThenTheFollowingNotificationThatASaleOccurredShouldBeSentToTheInventorySystem(Table table)
+    {
+        var notification = table.CreateInstance<CreateSaleOccurredNotificationModel>();
+
+        Mock<IInventoryService> mockInventoryClient = _context.Mocker.GetMock<IInventoryService>();
+
+        mockInventoryClient.Verify(p => p.NotifySaleOccurred(notification.ProductId,
+                                                             notification.Quantity),
+                                   Times.Once);
     }
 }

@@ -1,51 +1,52 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using CleanArchitecture.Application.Interfaces;
+using CleanArchitecture.Domain.Customers;
+
 using Moq.AutoMock;
 using Moq.EntityFrameworkCore;
-using CleanArchitecture.Application.Interfaces;
-using CleanArchitecture.Domain.Customers;
+
 using NUnit.Framework;
 
-namespace CleanArchitecture.Application.Customers.Queries.GetCustomerList
-{    
-    [TestFixture]    
-    public class GetCustomersListQueryTests
+namespace CleanArchitecture.Application.Customers.Queries.GetCustomerList;
+
+[ TestFixture ]
+public sealed class GetCustomersListQueryTests
+{
+    [ SetUp ]
+    public void SetUp()
     {
-        private GetCustomersListQuery _query;
-        private AutoMocker _mocker;
-        private Customer _customer;
+        _mocker = new AutoMocker();
 
-        private const int Id = 1;
-        private const string Name = "Customer 1";
-
-        [SetUp]
-        public void SetUp()
+        _customer = new Customer
         {
-            _mocker = new AutoMocker();
+            Id   = Id,
+            Name = Name
+        };
 
-            _customer = new Customer()
-            {
-                Id = Id,
-                Name = Name
-            };
+        _mocker.GetMock<IDatabaseService>()
+               .Setup(p => p.Customers)
+               .ReturnsDbSet(new List<Customer> { _customer });
 
-            _mocker.GetMock<IDatabaseService>()
-                .Setup(p => p.Customers)
-                .ReturnsDbSet(new List<Customer> { _customer });
+        _query = _mocker.CreateInstance<GetCustomersListQuery>();
+    }
 
-            _query = _mocker.CreateInstance<GetCustomersListQuery>();
-        }
+    private GetCustomersListQuery _query;
 
-        [Test]
-        public void TestExecuteShouldReturnListOfCustomers()
-        {
-            var results = _query.Execute();
+    private AutoMocker _mocker;
 
-            var result = results.Single();
+    private Customer _customer;
 
-            Assert.That(result.Id, Is.EqualTo(Id));
-            Assert.That(result.Name, Is.EqualTo(Name));
-        }
+    private const int Id = 1;
+
+    private const string Name = "Customer 1";
+
+    [ Test ]
+    public void TestExecuteShouldReturnListOfCustomers()
+    {
+        List<CustomerModel> results = _query.Execute();
+
+        CustomerModel result = results.Single();
+
+        Assert.That(result.Id,   Is.EqualTo(Id));
+        Assert.That(result.Name, Is.EqualTo(Name));
     }
 }

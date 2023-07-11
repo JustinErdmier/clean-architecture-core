@@ -1,52 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CleanArchitecture.Domain.Customers;
+﻿using CleanArchitecture.Domain.Customers;
 using CleanArchitecture.Domain.Employees;
 using CleanArchitecture.Domain.Products;
+using CleanArchitecture.Domain.Sales;
+
 using NUnit.Framework;
 
-namespace CleanArchitecture.Application.Sales.Commands.CreateSale.Factory
+namespace CleanArchitecture.Application.Sales.Commands.CreateSale.Factory;
+
+[ TestFixture ]
+public sealed class SaleFactoryTests
 {
-    [TestFixture]
-    public class SaleFactoryTests
+    [ SetUp ]
+    public void SetUp()
     {
-        private SaleFactory _factory;
-        private Customer _customer;
-        private Employee _employee;
-        private Product _product;
+        _customer = new Customer();
 
-        private static readonly DateTime DateTime = new DateTime(2001, 2, 3);
-        private const int Quantity = 123;
-        private const decimal Price = 1.00m;
+        _employee = new Employee();
 
-        [SetUp]
-        public void SetUp()
+        _product = new Product
         {
-            _customer = new Customer();
+            Price = Price
+        };
 
-            _employee = new Employee();
+        _factory = new SaleFactory();
+    }
 
-            _product = new Product
-            {
-                Price = Price
-            };
+    private SaleFactory _factory;
 
-            _factory = new SaleFactory();
-        }
+    private Customer _customer;
 
-        [Test]
-        public void TestCreateShouldCreateSale()
-        {
-            var result = _factory.Create(DateTime, _customer, _employee, _product, Quantity);
+    private Employee _employee;
 
-            Assert.That(result.Date, Is.EqualTo(DateTime));
-            Assert.That(result.Customer, Is.EqualTo(_customer));
-            Assert.That(result.Employee, Is.EqualTo(_employee));
-            Assert.That(result.Product, Is.EqualTo(_product));
-            Assert.That(result.UnitPrice, Is.EqualTo(Price));
-            Assert.That(result.Quantity, Is.EqualTo(Quantity));
-        }
+    private Product _product;
 
+    private static readonly DateTime DateTime = new (2001, 2, 3);
+
+    private const int Quantity = 123;
+
+    private const decimal Price = 1.00m;
+
+    [ Test ]
+    public void TestCreateShouldCreateSale()
+    {
+        Sale result = _factory.Create(DateTime, _customer, _employee, _product, Quantity);
+
+        Assert.That(result.Date,      Is.EqualTo(DateTime));
+        Assert.That(result.Customer,  Is.EqualTo(_customer));
+        Assert.That(result.Employee,  Is.EqualTo(_employee));
+        Assert.That(result.Product,   Is.EqualTo(_product));
+        Assert.That(result.UnitPrice, Is.EqualTo(Price));
+        Assert.That(result.Quantity,  Is.EqualTo(Quantity));
     }
 }

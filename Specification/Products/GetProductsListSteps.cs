@@ -1,57 +1,57 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using CleanArchitecture.Application.Products.Queries.GetProductsList;
-using CleanArchitecture.Specification.Shared;
+﻿using CleanArchitecture.Application.Products.Queries.GetProductsList;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using NUnit.Framework;
+
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
+
 using AppContext = CleanArchitecture.Specification.Shared.AppContext;
 
-namespace CleanArchitecture.Specification.Products
+namespace CleanArchitecture.Specification.Products;
+
+[ Binding ]
+public sealed class GetProductsListSteps
 {
-    [Binding]
-    public class GetProductsListSteps
+    private readonly AppContext _context;
+
+    private List<ProductModel> _results;
+
+    public GetProductsListSteps(AppContext context)
     {
-        private readonly AppContext _context;
-        private List<ProductModel> _results;
+        _context = context;
+        _results = new List<ProductModel>();
+    }
 
-        public GetProductsListSteps(AppContext context)
+    [ When(@"I request a list of products") ]
+    public void WhenIRequestAListOfProducts()
+    {
+        var query = _context.Container
+                            .GetService<IGetProductsListQuery>();
+
+        _results = query.Execute();
+    }
+
+    [ Then(@"the following products should be returned:") ]
+    public void ThenTheFollowingProductsShouldBeReturned(Table table)
+    {
+        List<ProductModel> models = table.CreateSet<ProductModel>().ToList();
+
+        for (int i = 0; i < models.Count; i++)
         {
-            _context = context;
-            _results = new List<ProductModel>();
-        }
+            ProductModel model = models[i];
 
-        [When(@"I request a list of products")]
-        public void WhenIRequestAListOfProducts()
-        {
-            var query = _context.Container
-                .GetService<IGetProductsListQuery>();
+            ProductModel result = _results[i];
 
-            _results = query.Execute();
-        }
-        
-        [Then(@"the following products should be returned:")]
-        public void ThenTheFollowingProductsShouldBeReturned(Table table)
-        {
-            var models = table.CreateSet<ProductModel>().ToList();
+            Assert.That(result.Id,
+                        Is.EqualTo(model.Id));
 
-            for (var i = 0; i < models.Count; i++)
-            {
-                var model = models[i];
+            Assert.That(result.Name,
+                        Is.EqualTo(model.Name));
 
-                var result = _results[i];
-
-                Assert.That(result.Id,
-                    Is.EqualTo(model.Id));
-
-                Assert.That(result.Name,
-                    Is.EqualTo(model.Name));
-
-                Assert.That(result.UnitPrice,
-                    Is.EqualTo(model.UnitPrice));
-            }
+            Assert.That(result.UnitPrice,
+                        Is.EqualTo(model.UnitPrice));
         }
     }
 }

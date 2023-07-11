@@ -1,10 +1,12 @@
-﻿@model CleanArchitecture.Application.Sales.Queries.GetSaleDetail.SaleDetailModel
+﻿@using CleanArchitecture.Application.Sales.Queries.GetSaleDetail
+@model SaleDetailModel
 
 @{
     ViewBag.Title = "Sale";
 }
 
 <h2>Sale</h2>
+
 <table>
     <tr>
         <th>ID</th>
@@ -39,4 +41,3 @@
         <td>$@Model.TotalPrice</td>
     </tr>
 </table>
-

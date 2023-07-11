@@ -1,21 +1,21 @@
-using Microsoft.EntityFrameworkCore;
 using CleanArchitecture.Domain.Customers;
 using CleanArchitecture.Domain.Employees;
 using CleanArchitecture.Domain.Products;
 using CleanArchitecture.Domain.Sales;
 
-namespace CleanArchitecture.Application.Interfaces
+using Microsoft.EntityFrameworkCore;
+
+namespace CleanArchitecture.Application.Interfaces;
+
+public interface IDatabaseService
 {
-    public interface IDatabaseService
-    {
-        DbSet<Customer> Customers { get; set; }
+    DbSet<Customer> Customers { get; }
 
-        DbSet<Employee> Employees { get; set; }
-        
-        DbSet<Product> Products { get; set; }
-        
-        DbSet<Sale> Sales { get; set; }
+    DbSet<Employee> Employees { get; }
 
-        void Save();
-    }
+    DbSet<Product> Products { get; }
+
+    DbSet<Sale> Sales { get; }
+
+    void Save();
 }

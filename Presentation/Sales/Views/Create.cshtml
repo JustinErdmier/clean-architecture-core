@@ -1,4 +1,5 @@
-﻿@model CleanArchitecture.Presentation.Sales.Models.CreateSaleViewModel
+﻿@using CleanArchitecture.Presentation.Sales.Models
+@model CreateSaleViewModel
 
 @{
     ViewBag.Title = "Create Sale";
@@ -11,7 +12,7 @@
     <form class="form-horizontal">
         <div class="form-group">
             <label class="control-label">Customer</label>
-            @Html.DropDownListFor(p => p.Sale.CustomerId, Model.Customers, new { @class="form-control" })
+            @Html.DropDownListFor(p => p.Sale.CustomerId, Model.Customers, new { @class = "form-control" })
         </div>
         <div class="form-group">
             <label class="control-label">Employee</label>
@@ -25,6 +26,6 @@
             <label class="control-label">Quantity</label>
             @Html.TextBoxFor(p => p.Sale.Quantity, new { @class = "form-control" })
         </div>
-        <button type="submit" class="btn btn-primary">Create</button>
+        <button class="btn btn-primary" type="submit">Create</button>
     </form>
 }

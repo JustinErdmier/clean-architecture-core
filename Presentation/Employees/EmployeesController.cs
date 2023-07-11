@@ -1,23 +1,20 @@
-﻿using System;
+﻿using CleanArchitecture.Application.Employees.Queries.GetEmployeesList;
+
 using Microsoft.AspNetCore.Mvc;
-using CleanArchitecture.Application.Employees.Queries.GetEmployeesList;
 
-namespace CleanArchitecture.Presentation.Employees
+namespace CleanArchitecture.Presentation.Employees;
+
+public sealed class EmployeesController : Controller
 {
-    public class EmployeesController : Controller
+    private readonly IGetEmployeesListQuery _query;
+
+    public EmployeesController(IGetEmployeesListQuery query) => _query = query;
+
+    public ViewResult Index()
     {
-        private readonly IGetEmployeesListQuery _query;
+        List<EmployeeModel> employees = _query.Execute();
 
-        public EmployeesController(IGetEmployeesListQuery query)
-        {
-            _query = query;
-        }
-
-        public ViewResult Index()
-        {
-            var employees = _query.Execute();
-
-            return View(employees);
-        }
+        // ReSharper disable once Mvc.ViewNotResolved
+        return View(employees);
     }
 }

@@ -1,41 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
-namespace CleanArchitecture.Domain.Products
+namespace CleanArchitecture.Domain.Products;
+
+[ TestFixture ]
+public sealed class ProductTests
 {
-    [TestFixture]
-    public class ProductTests
+    [ SetUp ]
+    public void SetUp()
     {
-        private Product _product;
-        private const int Id = 1;
-        private const string Name = "Test";
+        _product = new Product();
+    }
 
-        [SetUp]
-        public void SetUp()
-        {
-            _product = new Product();
-        }
+    private Product _product;
 
-        [Test]
-        public void TestSetAndGetId()
-        {
-            _product.Id = Id;
+    private const int Id = 1;
 
-            Assert.That(_product.Id,
-                Is.EqualTo(Id));
-        }
+    private const string Name = "Test";
 
-        [Test]
-        public void TestSetAndGetName()
-        {
-            _product.Name = Name;
+    [ Test ]
+    public void TestSetAndGetId()
+    {
+        _product.Id = Id;
 
-            Assert.That(_product.Name,
-                Is.EqualTo(Name));
-        }
+        Assert.That(_product.Id,
+                    Is.EqualTo(Id));
+    }
+
+    [ Test ]
+    public void TestSetAndGetName()
+    {
+        _product.Name = Name;
+
+        Assert.That(_product.Name,
+                    Is.EqualTo(Name));
     }
 }

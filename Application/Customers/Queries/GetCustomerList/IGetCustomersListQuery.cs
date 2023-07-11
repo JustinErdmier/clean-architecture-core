@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
+﻿namespace CleanArchitecture.Application.Customers.Queries.GetCustomerList;
 
-namespace CleanArchitecture.Application.Customers.Queries.GetCustomerList
+public interface IGetCustomersListQuery
 {
-    public interface IGetCustomersListQuery
-    {
-        List<CustomerModel> Execute();
-    }
+    List<CustomerModel> Execute();
 }

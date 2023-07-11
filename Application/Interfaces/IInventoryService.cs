@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿namespace CleanArchitecture.Application.Interfaces;
 
-namespace CleanArchitecture.Application.Interfaces
+public interface IInventoryService
 {
-    public interface IInventoryService
-    {
-        void NotifySaleOccurred(int productId, int quantity);
-    }
+    void NotifySaleOccurred(int productId, int quantity);
 }

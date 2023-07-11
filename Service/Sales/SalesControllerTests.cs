@@ -1,73 +1,73 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using Moq.AutoMock;
+﻿using System.Net;
+
 using CleanArchitecture.Application.Sales.Commands.CreateSale;
 using CleanArchitecture.Application.Sales.Queries.GetSaleDetail;
 using CleanArchitecture.Application.Sales.Queries.GetSalesList;
+
 using Moq;
+using Moq.AutoMock;
+
 using NUnit.Framework;
 
-namespace CleanArchitecture.Service.Sales
+namespace CleanArchitecture.Service.Sales;
+
+[ TestFixture ]
+public sealed class SalesControllerTests
 {
-    [TestFixture]
-    public class SalesControllerTests
+    [ SetUp ]
+    public void SetUp()
     {
-        private SalesController _controller;
-        private AutoMocker _mocker;
+        _mocker = new AutoMocker();
 
-        [SetUp]
-        public void SetUp()
-        {
-            _mocker = new AutoMocker();
+        _controller = _mocker.CreateInstance<SalesController>();
+    }
 
-            _controller = _mocker.CreateInstance<SalesController>();
-        }
+    private SalesController _controller;
 
-        [Test]
-        public void TestGetShouldReturnListOfSales()
-        {
-            var sale = new SalesListItemModel();
+    private AutoMocker _mocker;
 
-            _mocker.GetMock<IGetSalesListQuery>()
-                .Setup(p => p.Execute())
-                .Returns(new List<SalesListItemModel> {sale} );
+    [ Test ]
+    public void TestGetShouldReturnListOfSales()
+    {
+        var sale = new SalesListItemModel();
 
-            var result = _controller.Get();
+        _mocker.GetMock<IGetSalesListQuery>()
+               .Setup(p => p.Execute())
+               .Returns(new List<SalesListItemModel> { sale });
 
-            Assert.That(result, 
-                Contains.Item(sale));
-        }
+        IEnumerable<SalesListItemModel> result = _controller.Get();
 
-        [Test]
-        public void TestGetShouldReturnSaleDetails()
-        {
-            var sale = new SaleDetailModel();
+        Assert.That(result,
+                    Contains.Item(sale));
+    }
 
-            _mocker.GetMock<IGetSaleDetailQuery>()
-                .Setup(p => p.Execute(1))
-                .Returns(sale);
+    [ Test ]
+    public void TestGetShouldReturnSaleDetails()
+    {
+        var sale = new SaleDetailModel();
 
-            var result = _controller.Get(1);
+        _mocker.GetMock<IGetSaleDetailQuery>()
+               .Setup(p => p.Execute(1))
+               .Returns(sale);
 
-            Assert.That(result,
-                Is.EqualTo(sale));
-        }
+        SaleDetailModel result = _controller.Get(1);
 
-        [Test]
-        public void TestCreateSaleShouldCreateSale()
-        {
-            var sale = new CreateSaleModel();
+        Assert.That(result,
+                    Is.EqualTo(sale));
+    }
 
-            var result = _controller.Create(sale);
+    [ Test ]
+    public void TestCreateSaleShouldCreateSale()
+    {
+        var sale = new CreateSaleModel();
 
-            _mocker.GetMock<ICreateSaleCommand>()
-                .Verify(p => p.Execute(sale),
-                    Times.Once);
+        HttpResponseMessage result = _controller.Create(sale);
 
-            Assert.That(result.StatusCode, 
-                Is.EqualTo(HttpStatusCode.Created));
-        }
+        _mocker.GetMock<ICreateSaleCommand>()
+               .Verify(p => p.Execute(sale),
+                       Times.Once);
+
+        Assert.That(result.StatusCode,
+                    Is.EqualTo(HttpStatusCode.Created));
     }
 }

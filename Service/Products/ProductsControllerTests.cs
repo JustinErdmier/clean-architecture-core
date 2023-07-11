@@ -1,40 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using CleanArchitecture.Application.Products.Queries.GetProductsList;
+
 using Moq.AutoMock;
-using CleanArchitecture.Application.Products.Queries.GetProductsList;
+
 using NUnit.Framework;
 
-namespace CleanArchitecture.Service.Products
+namespace CleanArchitecture.Service.Products;
+
+[ TestFixture ]
+public sealed class ProductsControllerTests
 {
-    [TestFixture]
-    public class ProductsControllerTests
+    [ SetUp ]
+    public void SetUp()
     {
-        private ProductsController _controller;
-        private AutoMocker _mocker;
+        _mocker = new AutoMocker();
 
-        [SetUp]
-        public void SetUp()
-        {
-            _mocker = new AutoMocker();
+        _controller = _mocker.CreateInstance<ProductsController>();
+    }
 
-            _controller = _mocker.CreateInstance<ProductsController>();
-        }
+    private ProductsController _controller;
 
-        [Test]
-        public void TestGetProductsListShouldReturnListOfProducts()
-        {
-            var product = new ProductModel();
+    private AutoMocker _mocker;
 
-            _mocker.GetMock<IGetProductsListQuery>()
-                .Setup(p => p.Execute())
-                .Returns(new List<ProductModel> { product });
+    [ Test ]
+    public void TestGetProductsListShouldReturnListOfProducts()
+    {
+        var product = new ProductModel();
 
-            var results = _controller.Get();
+        _mocker.GetMock<IGetProductsListQuery>()
+               .Setup(p => p.Execute())
+               .Returns(new List<ProductModel> { product });
 
-            Assert.That(results,
-                Contains.Item(product));
-        }
+        IEnumerable<ProductModel> results = _controller.Get();
+
+        Assert.That(results,
+                    Contains.Item(product));
     }
 }

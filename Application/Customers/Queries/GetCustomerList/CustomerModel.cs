@@ -1,9 +1,8 @@
-﻿namespace CleanArchitecture.Application.Customers.Queries.GetCustomerList
-{
-    public class CustomerModel
-    {
-        public int Id { get; set; }
+﻿namespace CleanArchitecture.Application.Customers.Queries.GetCustomerList;
 
-        public string Name { get; set; }
-    }
+public sealed class CustomerModel
+{
+    public int Id { get; init; }
+
+    public string Name { get; init; }
 }

@@ -1,59 +1,54 @@
-﻿using System;
-using System.Collections.Generic;
-using CleanArchitecture.Domain.Common;
+﻿using CleanArchitecture.Domain.Common;
 using CleanArchitecture.Domain.Customers;
 using CleanArchitecture.Domain.Employees;
 using CleanArchitecture.Domain.Products;
 
-namespace CleanArchitecture.Domain.Sales
+namespace CleanArchitecture.Domain.Sales;
+
+public sealed class Sale : IEntity
 {
-    public class Sale : IEntity
+    private int _quantity;
+
+    private decimal _unitPrice;
+
+    public DateTime Date { get; set; }
+
+    public Customer Customer { get; set; }
+
+    public Employee Employee { get; set; }
+
+    public Product Product { get; set; }
+
+    public decimal UnitPrice
     {
-        private int _quantity;
-        private decimal _totalPrice;
-        private decimal _unitPrice;
+        get => _unitPrice;
 
-        public int Id { get; set; }
-
-        public DateTime Date { get; set; }
-
-        public Customer Customer { get; set; }
-
-        public Employee Employee { get; set; }
-
-        public Product Product { get; set; }
-
-        public decimal UnitPrice
+        set
         {
-            get { return _unitPrice; }
-            set
-            {
-                _unitPrice = value;
+            _unitPrice = value;
 
-                UpdateTotalPrice();
-            }
+            UpdateTotalPrice();
         }
+    }
 
-        public int Quantity
+    public int Quantity
+    {
+        get => _quantity;
+
+        set
         {
-            get { return _quantity; }
-            set
-            {
-                _quantity = value;
-                
-                UpdateTotalPrice();
-            }
-        }
+            _quantity = value;
 
-        public decimal TotalPrice
-        {
-            get { return _totalPrice; }
-            private set { _totalPrice = value; }
+            UpdateTotalPrice();
         }
+    }
 
-        private void UpdateTotalPrice()
-        {
-            _totalPrice = _unitPrice * _quantity;
-        }
+    public decimal TotalPrice { get; private set; }
+
+    public int Id { get; set; }
+
+    private void UpdateTotalPrice()
+    {
+        TotalPrice = _unitPrice * _quantity;
     }
 }

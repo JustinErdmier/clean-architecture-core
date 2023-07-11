@@ -1,14 +1,10 @@
-﻿using System;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
-namespace CleanArchitecture.Presentation.Home
+namespace CleanArchitecture.Presentation.Home;
+
+public sealed class HomeController : Controller
 {
-    public class HomeController : Controller
-    {
-        public ViewResult Index()
-        {
-            return View();
-        }
-    }
+    public ViewResult Index() =>
+        // ReSharper disable once Mvc.ViewNotResolved
+        View();
 }
